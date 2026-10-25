@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nettoolkit"
+version = "0.1.0"
+description = "A modular networking toolkit: subnet calculator, LAN/port scanner and more."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.scripts]
+nettool = "nettoolkit.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["nettoolkit*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
