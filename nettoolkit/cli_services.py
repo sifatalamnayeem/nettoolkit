@@ -158,6 +158,51 @@ def cmd_alert_test(args: argparse.Namespace) -> int:
     return 0 if ok else 1
 
 
+# ---- dashboard -----------------------------------------------------------
+
+def cmd_dashboard(args: argparse.Namespace) -> int:
+    import os
+    import tempfile
+
+    from .dashboard import make_server
+
+    tmp = None
+    db = args.db
+    if args.demo:
+        from . import demo
+
+        tmp = tempfile.TemporaryDirectory()
+        db = os.path.join(tmp.name, "demo.db")
+        conn = storage.connect(db)
+        demo.seed(conn)
+        conn.close()
+        print("Demo mode: showing synthetic data; your real database is not touched.")
+
+    try:
+        try:
+            server = make_server(db, args.host, args.port)
+        except OSError as exc:
+            raise RuntimeError(
+                f"cannot start dashboard on {args.host}:{args.port}: {exc.strerror or exc}"
+            ) from exc
+
+        host, port = server.server_address[:2]
+        print(f"Dashboard running at http://{host}:{port}  (Ctrl+C to stop)")
+        if args.host not in ("127.0.0.1", "localhost", "::1"):
+            print(
+                "warning: the dashboard has no login. Only expose it on a network you trust.",
+                file=sys.stderr,
+            )
+        try:
+            server.serve_forever()
+        finally:
+            server.server_close()
+    finally:
+        if tmp is not None:
+            tmp.cleanup()
+    return 0
+
+
 # ---- registration --------------------------------------------------------
 
 def register(sub) -> None:
@@ -208,6 +253,13 @@ def register(sub) -> None:
     p.add_argument("output", help="e.g. speed.csv")
     p.add_argument("--db", help=db_help)
     p.set_defaults(func=cmd_speed_export)
+
+    p = sub.add_parser("dashboard", help="web dashboard for uptime and speed history")
+    p.add_argument("--host", default="127.0.0.1", help="bind address (default 127.0.0.1)")
+    p.add_argument("--port", type=int, default=8000)
+    p.add_argument("--demo", action="store_true", help="show synthetic data (good for screenshots)")
+    p.add_argument("--db", help=db_help)
+    p.set_defaults(func=cmd_dashboard)
 
     p = sub.add_parser("alert-test", help="send a test alert to Telegram")
     p.set_defaults(func=cmd_alert_test)

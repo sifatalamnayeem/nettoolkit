@@ -1,0 +1,135 @@
+:root {
+  --bg: #f6f7f9;
+  --card: #ffffff;
+  --text: #1b1f24;
+  --muted: #5b6573;
+  --border: #dfe3e8;
+  --up: #14703f;
+  --up-bg: #e3f4ea;
+  --down: #b3261e;
+  --down-bg: #fbe4e2;
+  --c0: #2563b0;
+  --c1: #b45309;
+  --grid: #e5e8ec;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12151a;
+    --card: #1b2027;
+    --text: #e8ebef;
+    --muted: #9aa5b3;
+    --border: #2d343e;
+    --up: #5fd08f;
+    --up-bg: #17301f;
+    --down: #ff8a80;
+    --down-bg: #3a1c1a;
+    --c0: #6aa8f0;
+    --c1: #f0b35a;
+    --grid: #2a313b;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0 16px 48px;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+header.top, main { max-width: 1100px; margin: 0 auto; }
+
+header.top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 24px 0 8px;
+}
+
+h1 { margin: 0; font-size: 1.6rem; }
+h2 { margin: 28px 0 8px; font-size: 1.1rem; }
+p { margin: 0; }
+.muted { color: var(--muted); font-size: 0.9rem; }
+
+.range { display: grid; gap: 4px; font-size: 0.85rem; color: var(--muted); }
+select {
+  font: inherit;
+  padding: 6px 10px;
+  color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.banner {
+  max-width: 1100px;
+  margin: 8px auto;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--down-bg);
+  color: var(--down);
+}
+
+.grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); margin-top: 12px; }
+.grid.two { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+
+.card {
+  margin: 0;
+  padding: 14px 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+figcaption, .card h3 { margin: 0 0 6px; font-size: 0.95rem; font-weight: 600; }
+
+.card-head { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.card-head h3 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.badge {
+  flex: none;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.badge.up { background: var(--up-bg); color: var(--up); }
+.badge.down { background: var(--down-bg); color: var(--down); }
+
+.stats { display: flex; gap: 18px; margin: 8px 0; font-size: 0.85rem; color: var(--muted); }
+.stats strong { display: block; color: var(--text); font-size: 1.05rem; }
+
+.detail { font-size: 0.8rem; color: var(--muted); overflow-wrap: anywhere; }
+
+.strip { display: block; width: 100%; height: 22px; margin: 6px 0; }
+.strip .ok { fill: var(--up); }
+.strip .bad { fill: var(--down); }
+
+svg.chart { display: block; width: 100%; height: auto; }
+svg.chart text { fill: var(--muted); font-size: 11px; }
+svg.chart .gridline { stroke: var(--grid); stroke-width: 1; }
+svg.chart .line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+svg.chart .dot { stroke: none; }
+.s0 { stroke: var(--c0); fill: var(--c0); }
+.s1 { stroke: var(--c1); fill: var(--c1); }
+svg.chart .dot.s0, svg.chart .dot.s1 { stroke: none; }
+svg.chart .line.s0, svg.chart .line.s1 { fill: none; }
+
+.legend { display: flex; gap: 14px; margin-top: 6px; font-size: 0.8rem; color: var(--muted); }
+.legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; }
+.legend .sw.s0 { background: var(--c0); }
+.legend .sw.s1 { background: var(--c1); }
+
+.tiles { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+.tile { flex: 1 1 140px; padding: 12px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; }
+.tile .label { font-size: 0.8rem; color: var(--muted); }
+.tile .value { font-size: 1.5rem; font-weight: 650; }
+.tile .unit { font-size: 0.85rem; font-weight: 400; color: var(--muted); }
+
+.empty { color: var(--muted); padding: 24px 0; text-align: center; }

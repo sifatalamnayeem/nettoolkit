@@ -9,6 +9,7 @@ command. No third-party dependencies (standard library only).
 | `discover` / `scan` | Ping sweep and TCP port scanner |
 | `monitor` | Uptime monitor (HTTP, TCP, SSL expiry) with Telegram alerts |
 | `speedlog` | Internet speed logger with history and CSV export |
+| `dashboard` | Web dashboard: uptime strips, latency and speed charts |
 
 > **Use responsibly:** only scan networks and hosts that you own or have
 > explicit permission to test.
@@ -76,6 +77,22 @@ nettool speedlog export speed.csv
 Results are stored in SQLite at `~/.nettoolkit/data.db` (override with `NETTOOL_DB`
 or `--db`). The speed test uses Cloudflare's public test endpoints by default.
 
+### Dashboard
+
+```bash
+nettool dashboard --demo      # synthetic data, ideal for a README screenshot
+nettool dashboard             # your real data, http://127.0.0.1:8000
+nettool dashboard --port 9000 --db /path/to/data.db
+```
+
+Run `nettool monitor run` and `nettool speedlog loop` in other terminals and the
+page refreshes itself every 30 seconds. It is read-only, built with the standard
+library only (a small JSON API plus plain HTML/CSS/JS, charts drawn as inline SVG),
+and it supports light and dark mode. There is no login, so it binds to `127.0.0.1`
+by default; keep it that way unless you put authentication in front of it.
+
+> Add a screenshot: `![dashboard](docs/dashboard.png)`
+
 Example output:
 
 ```
@@ -103,7 +120,9 @@ nettoolkit/
 │   ├── monitor/     # uptime checks + state-change alerting
 │   ├── alerts/      # Telegram / console notifiers
 │   ├── speedlog/    # speed test
-│   ├── storage.py   # SQLite history (used by the Phase 3 dashboard)
+│   ├── dashboard/   # JSON API, server and static frontend
+│   ├── demo.py      # synthetic data for `dashboard --demo`
+│   ├── storage.py   # SQLite history shared by monitor, speedlog, dashboard
 │   └── cli.py       # `nettool` command
 ├── tests/
 └── pyproject.toml
@@ -119,7 +138,7 @@ pytest
 
 - [x] Phase 1: subnet calculator, scanner, CLI
 - [x] Phase 2: uptime monitor + Telegram alerts, speed test logger
-- [ ] Phase 3: web dashboard (Flask/Streamlit)
+- [x] Phase 3: web dashboard
 - [ ] Phase 4: packet sniffer, log analyzer, Netmiko automation, home lab docs
 
 ## License

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NetToolkit Dashboard</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="top">
+    <div>
+      <h1>NetToolkit</h1>
+      <p class="muted" id="updated">Loading…</p>
+    </div>
+    <label class="range">
+      Range
+      <select id="hours">
+        <option value="1">Last hour</option>
+        <option value="6">Last 6 hours</option>
+        <option value="24" selected>Last 24 hours</option>
+        <option value="72">Last 3 days</option>
+        <option value="168">Last 7 days</option>
+      </select>
+    </label>
+  </header>
+
+  <p id="error" class="banner" hidden></p>
+
+  <main>
+    <section aria-labelledby="h-uptime">
+      <h2 id="h-uptime">Uptime</h2>
+      <p id="summary" class="muted"></p>
+      <div id="targets" class="grid"></div>
+    </section>
+
+    <section aria-labelledby="h-speed">
+      <h2 id="h-speed">Internet speed</h2>
+      <div id="speed-tiles" class="tiles"></div>
+      <div class="grid two">
+        <figure class="card">
+          <figcaption>Download / upload (Mbps)</figcaption>
+          <div id="chart-throughput"></div>
+          <div class="legend" id="legend-throughput"></div>
+        </figure>
+        <figure class="card">
+          <figcaption>Ping (ms)</figcaption>
+          <div id="chart-ping"></div>
+        </figure>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
