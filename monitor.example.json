@@ -1,0 +1,10 @@
+{
+  "interval": 60,
+  "fail_threshold": 2,
+  "targets": [
+    { "name": "Google", "type": "http", "url": "https://www.google.com", "timeout": 5 },
+    { "name": "My website", "type": "http", "url": "https://example.com", "expect_status": 200 },
+    { "name": "Office SSH", "type": "tcp", "host": "example.com", "port": 22 },
+    { "name": "Website certificate", "type": "ssl", "host": "example.com", "warn_days": 14 }
+  ]
+}

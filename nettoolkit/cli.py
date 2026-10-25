@@ -7,7 +7,7 @@ import json
 import socket
 import sys
 
-from . import __version__
+from . import __version__, cli_services
 from .scanner import discover_hosts, scan_ports
 from .scanner.scanner import parse_ports
 from .subnet import calculate, split_subnet
@@ -119,6 +119,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--json", action="store_true", help="output JSON")
     p.set_defaults(func=cmd_discover)
 
+    cli_services.register(sub)
+
     return parser
 
 
@@ -127,7 +129,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         return args.func(args)
-    except ValueError as exc:
+    except (ValueError, RuntimeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
     except KeyboardInterrupt:
