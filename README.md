@@ -92,7 +92,7 @@ library only (a small JSON API plus plain HTML/CSS/JS, charts drawn as inline SV
 and it supports light and dark mode. There is no login, so it binds to `127.0.0.1`
 by default; keep it that way unless you put authentication in front of it.
 
-> Add a screenshot: `![dashboard](docs/dashboard.png)`
+![NetToolkit dashboard (demo data)](docs/dashboard.png)
 
 ### SSH log analyzer
 
