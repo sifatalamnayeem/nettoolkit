@@ -10,6 +10,7 @@ command. No third-party dependencies (standard library only).
 | `monitor` | Uptime monitor (HTTP, TCP, SSL expiry) with Telegram alerts |
 | `speedlog` | Internet speed logger with history and CSV export |
 | `dashboard` | Web dashboard: uptime strips, latency and speed charts |
+| `logscan` | SSH auth log analyzer: brute-force sources and risky logins |
 
 > **Use responsibly:** only scan networks and hosts that you own or have
 > explicit permission to test.
@@ -93,6 +94,35 @@ by default; keep it that way unless you put authentication in front of it.
 
 > Add a screenshot: `![dashboard](docs/dashboard.png)`
 
+### SSH log analyzer
+
+```bash
+nettool logscan examples/auth.sample.log --year 2026     # try it on the bundled sample
+sudo nettool logscan /var/log/auth.log                   # Debian/Ubuntu
+sudo nettool logscan /var/log/secure --threshold 10 --window 5
+nettool logscan auth.log --json                          # for scripts
+nettool logscan auth.log --ips-only                      # flagged IPs, one per line
+journalctl -u ssh --no-pager | nettool logscan -         # read from stdin
+```
+
+```
+Brute-force sources (>= 5 failures within 10 min):
+  IP                                      FAILS   PEAK   USERS  FIRST -> LAST
+  203.0.113.7                             8       8      4      2026-10-25 02:14:03 -> 2026-10-25 02:14:50
+
+Logins that followed many failures from the same IP (review these first):
+  2026-10-25 14:20:33  user 'alice' via password from 198.51.100.23 after 6 failed attempts
+```
+
+An IP is flagged when it reaches `--threshold` failed attempts inside any
+`--window` minute span, so slow, spread-out failures are not reported. The
+"followed many failures" section is the important one: a successful login from an
+IP that had just failed repeatedly may mean a guessed password. The tool only reads
+logs. It never blocks anything; review `--ips-only` output before adding firewall rules
+(or use a tool such as fail2ban for automatic blocking). It understands classic syslog
+and RFC 3339 timestamps, IPv4 and IPv6. Usernames are attacker-controlled text, so
+control characters are stripped before printing.
+
 Example output:
 
 ```
@@ -121,6 +151,7 @@ nettoolkit/
 │   ├── alerts/      # Telegram / console notifiers
 │   ├── speedlog/    # speed test
 │   ├── dashboard/   # JSON API, server and static frontend
+│   ├── loganalyzer/ # sshd log parser + brute-force detection
 │   ├── demo.py      # synthetic data for `dashboard --demo`
 │   ├── storage.py   # SQLite history shared by monitor, speedlog, dashboard
 │   └── cli.py       # `nettool` command
@@ -139,7 +170,7 @@ pytest
 - [x] Phase 1: subnet calculator, scanner, CLI
 - [x] Phase 2: uptime monitor + Telegram alerts, speed test logger
 - [x] Phase 3: web dashboard
-- [ ] Phase 4: packet sniffer, log analyzer, Netmiko automation, home lab docs
+- [ ] Phase 4: log analyzer (done), packet sniffer, Netmiko automation, home lab docs
 
 ## License
 

@@ -7,7 +7,7 @@ import json
 import socket
 import sys
 
-from . import __version__, cli_services
+from . import __version__, cli_security, cli_services
 from .scanner import discover_hosts, scan_ports
 from .scanner.scanner import parse_ports
 from .subnet import calculate, split_subnet
@@ -120,6 +120,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.set_defaults(func=cmd_discover)
 
     cli_services.register(sub)
+    cli_security.register(sub)
 
     return parser
 

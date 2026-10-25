@@ -1,0 +1,23 @@
+Oct 25 02:13:58 web01 sshd[1020]: Server listening on 0.0.0.0 port 22.
+Oct 25 02:14:01 web01 sshd[1021]: Invalid user admin from 203.0.113.7 port 51022
+Oct 25 02:14:03 web01 sshd[1021]: Failed password for invalid user admin from 203.0.113.7 port 51022 ssh2
+Oct 25 02:14:09 web01 sshd[1023]: Failed password for root from 203.0.113.7 port 51030 ssh2
+Oct 25 02:14:15 web01 sshd[1025]: Failed password for root from 203.0.113.7 port 51038 ssh2
+Oct 25 02:14:21 web01 sshd[1027]: Invalid user ubuntu from 203.0.113.7 port 51046
+Oct 25 02:14:23 web01 sshd[1027]: Failed password for invalid user ubuntu from 203.0.113.7 port 51046 ssh2
+Oct 25 02:14:29 web01 sshd[1029]: Failed password for root from 203.0.113.7 port 51054 ssh2
+Oct 25 02:14:35 web01 sshd[1031]: Invalid user test from 203.0.113.7 port 51062
+Oct 25 02:14:37 web01 sshd[1031]: Failed password for invalid user test from 203.0.113.7 port 51062 ssh2
+Oct 25 02:14:44 web01 sshd[1033]: Failed password for root from 203.0.113.7 port 51070 ssh2
+Oct 25 02:14:50 web01 sshd[1035]: Failed password for root from 203.0.113.7 port 51078 ssh2
+Oct 25 09:02:11 web01 sshd[1301]: Accepted publickey for deploy from 192.0.2.10 port 40122 ssh2: ED25519 SHA256:examplefingerprint
+Oct 25 11:30:02 web01 sshd[1502]: Failed password for alice from 192.0.2.55 port 33210 ssh2
+Oct 25 11:30:09 web01 sshd[1502]: Accepted password for alice from 192.0.2.55 port 33210 ssh2
+Oct 25 14:20:01 web01 sshd[1810]: Failed password for alice from 198.51.100.23 port 60001 ssh2
+Oct 25 14:20:05 web01 sshd[1812]: Failed password for alice from 198.51.100.23 port 60003 ssh2
+Oct 25 14:20:11 web01 sshd[1814]: Failed password for alice from 198.51.100.23 port 60005 ssh2
+Oct 25 14:20:16 web01 sshd[1816]: Failed password for alice from 198.51.100.23 port 60007 ssh2
+Oct 25 14:20:22 web01 sshd[1818]: Failed password for alice from 198.51.100.23 port 60009 ssh2
+Oct 25 14:20:27 web01 sshd[1820]: Failed password for alice from 198.51.100.23 port 60011 ssh2
+Oct 25 14:20:33 web01 sshd[1822]: Accepted password for alice from 198.51.100.23 port 60013 ssh2
+Oct 25 14:25:00 web01 sudo:    alice : TTY=pts/0 ; PWD=/home/alice ; USER=root ; COMMAND=/bin/bash
