@@ -1,0 +1,6 @@
+{
+  "devices": [
+    { "name": "core-sw1", "host": "192.168.1.2", "device_type": "cisco_ios" },
+    { "name": "edge-router", "host": "192.168.1.1", "device_type": "mikrotik_routeros", "port": 22 }
+  ]
+}

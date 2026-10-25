@@ -1,0 +1,47 @@
+# Home lab: Pi-hole (network-wide DNS ad blocking) + WireGuard (remote access VPN).
+# Copy .env.example to .env and fill it in first. See README.md in this folder.
+#
+# Both services are bound to HOST_IP (your server's LAN address) instead of 0.0.0.0,
+# so DNS and the web interface are not reachable from other networks by accident.
+
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "${HOST_IP}:53:53/tcp"
+      - "${HOST_IP}:53:53/udp"
+      - "${HOST_IP}:8080:80/tcp"     # web UI: http://HOST_IP:8080/admin
+    environment:
+      TZ: "${TZ}"
+      FTLCONF_webserver_api_password: "${PIHOLE_PASSWORD}"
+      FTLCONF_dns_listeningMode: "ALL"   # required with Docker's default bridge network
+    volumes:
+      - "./etc-pihole:/etc/pihole"
+    restart: unless-stopped
+
+  wireguard:
+    container_name: wireguard
+    image: lscr.io/linuxserver/wireguard:latest
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE                       # optional: only if the host kernel lacks the modules
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "${TZ}"
+      SERVERURL: "${WG_SERVERURL}"       # public IP or DDNS name of your home connection
+      SERVERPORT: "51820"
+      PEERS: "${WG_PEERS}"               # e.g. "laptop,phone"
+      PEERDNS: "${HOST_IP}"              # VPN clients use Pi-hole for DNS
+      INTERNAL_SUBNET: "10.13.13.0"
+      ALLOWEDIPS: "0.0.0.0/0"            # full tunnel; use e.g. 192.168.1.0/24 for split tunnel
+      LOG_CONFS: "false"                 # do not print peer QR codes (private keys) into docker logs
+    volumes:
+      - "./wireguard-config:/config"
+      - "/lib/modules:/lib/modules:ro"
+    ports:
+      - "51820:51820/udp"                # the ONLY port you forward on your router
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: unless-stopped

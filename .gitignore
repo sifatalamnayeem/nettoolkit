@@ -8,3 +8,10 @@ build/
 dist/
 .env
 *.log
+*.pcap
+monitor.json
+inventory.json
+backups/
+etc-pihole/
+wireguard-config/
+homelab-backup-*.tar.gz

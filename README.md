@@ -11,6 +11,9 @@ command. No third-party dependencies (standard library only).
 | `speedlog` | Internet speed logger with history and CSV export |
 | `dashboard` | Web dashboard: uptime strips, latency and speed charts |
 | `logscan` | SSH auth log analyzer: brute-force sources and risky logins |
+| `netauto` | Router/switch config backup with change diffs, and bulk commands (Netmiko) |
+
+There is also a [home lab guide](docs/homelab/README.md) (Pi-hole + WireGuard in Docker).
 
 > **Use responsibly:** only scan networks and hosts that you own or have
 > explicit permission to test.
@@ -123,6 +126,34 @@ logs. It never blocks anything; review `--ips-only` output before adding firewal
 and RFC 3339 timestamps, IPv4 and IPv6. Usernames are attacker-controlled text, so
 control characters are stripped before printing.
 
+### Network automation (Netmiko)
+
+```bash
+pip install -e ".[automation]"          # installs Netmiko (only this feature needs it)
+cp examples/inventory.example.json inventory.json
+export NETTOOL_USER=admin               # credentials come from the environment (or a prompt),
+export NETTOOL_PASS=...                 # never from the inventory file
+
+nettool netauto backup -i inventory.json -o backups --show-diff
+nettool netauto run -i inventory.json -c "show version" -c "show ip interface brief"
+
+# Configuration changes: dry run first, then apply on purpose
+nettool netauto run -i inventory.json --config-file change.txt            # prints what WOULD be sent
+nettool netauto run -i inventory.json --config-file change.txt --apply    # asks you to type 'yes'
+```
+
+How it keeps you out of trouble:
+- `backup` stores one timestamped file per change and says `NEW`, `CHANGED +3 -1`, or
+  `UNCHANGED`. Lines that differ on every run (timestamps, "Building configuration") are ignored.
+  Backup files are owner-only (`0600`) because configs contain secrets: keep `backups/` out of git.
+- `run -c` only accepts read-only commands (`show`, `display`, `ping`, `traceroute`, `get`).
+- Changes are a dry run unless you pass `--apply`, and `--apply` asks for confirmation.
+- One unreachable device never stops the others; its error is reported and the exit code is 1.
+- The inventory is rejected if it contains a `password` field.
+
+The logic is tested with a fake connection; I could not test against real devices, so try it on
+a lab device first (for example a Cisco Packet Tracer, GNS3 or EVE-NG node).
+
 Example output:
 
 ```
@@ -152,6 +183,7 @@ nettoolkit/
 │   ├── speedlog/    # speed test
 │   ├── dashboard/   # JSON API, server and static frontend
 │   ├── loganalyzer/ # sshd log parser + brute-force detection
+│   ├── automation/  # inventory, config backup + diff, bulk commands
 │   ├── demo.py      # synthetic data for `dashboard --demo`
 │   ├── storage.py   # SQLite history shared by monitor, speedlog, dashboard
 │   └── cli.py       # `nettool` command
@@ -170,7 +202,8 @@ pytest
 - [x] Phase 1: subnet calculator, scanner, CLI
 - [x] Phase 2: uptime monitor + Telegram alerts, speed test logger
 - [x] Phase 3: web dashboard
-- [ ] Phase 4: log analyzer (done), packet sniffer, Netmiko automation, home lab docs
+- [x] Phase 4: log analyzer, Netmiko automation, home lab docs
+- [ ] Packet sniffer (`nettool sniff`): in progress, not working in this snapshot
 
 ## License
 
