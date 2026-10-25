@@ -10,7 +10,7 @@ a single `nettool` command. No third-party dependencies.
 ## Install
 
 ```bash
-git clone https://github.com/<your-username>/nettoolkit.git
+git clone https://github.com/sifatalamnayeem/nettoolkit.git
 cd nettoolkit
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
