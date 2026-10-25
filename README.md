@@ -12,6 +12,9 @@ command. No third-party dependencies (standard library only).
 | `dashboard` | Web dashboard: uptime strips, latency and speed charts |
 | `logscan` | SSH auth log analyzer: brute-force sources and risky logins |
 | `netauto` | Router/switch config backup with change diffs, and bulk commands (Netmiko) |
+| `dns` | DNS lookups (A, AAAA, MX, NS, TXT, CNAME, PTR) and resolver speed comparison |
+| `vlsm` | VLSM planner: department sizes in, a subnet plan out |
+| `topology` | Network map (Graphviz) drawn from `discover` / `scan` results |
 
 There is also a [home lab guide](docs/homelab/README.md) (Pi-hole + WireGuard in Docker).
 
@@ -126,6 +129,55 @@ logs. It never blocks anything; review `--ips-only` output before adding firewal
 and RFC 3339 timestamps, IPv4 and IPv6. Usernames are attacker-controlled text, so
 control characters are stripped before printing.
 
+### DNS lookup
+
+```bash
+nettool dns example.com                       # A record via your system resolver
+nettool dns example.com -t MX -t TXT -s 1.1.1.1
+nettool dns 192.0.2.5 -t PTR                  # reverse lookup from an IP
+nettool dns example.com --compare             # which resolver is fastest from here?
+```
+
+Its own small DNS client (standard library only, no `dig` needed). Replies are treated as
+untrusted: the transaction ID and sender are checked, forged or late packets are ignored,
+compression-pointer loops are cut off, and control characters in TXT records are removed.
+Large answers automatically retry over TCP. The parser is tested against a local fake DNS
+server and random garbage; I could not test it against real internet servers where it was
+written (the sandbox blocks DNS), so run `nettool dns example.com` once on your own network.
+
+### VLSM planner
+
+```bash
+nettool vlsm 192.168.10.0/24 -r Sales:50 -r IT:20 -r HR:10 -r Link:2
+```
+
+```
+NAME              NEED   SUBNET              MASK             HOST RANGE                        USABLE  SPARE
+Sales             50     192.168.10.0/26     255.255.255.192  192.168.10.1 - 192.168.10.62      62      12
+IT                20     192.168.10.64/27    255.255.255.224  192.168.10.65 - 192.168.10.94     30      10
+HR                10     192.168.10.96/28    255.255.255.240  192.168.10.97 - 192.168.10.110    14      4
+Link              2      192.168.10.112/30   255.255.255.252  192.168.10.113 - 192.168.10.114   2       0
+
+192.168.10.0/24: 116 of 256 addresses used (45.3%)
+Free space: 192.168.10.116/30, 192.168.10.120/29, 192.168.10.128/25
+```
+
+Biggest subnet first, so nothing overlaps and no space is lost between subnets. Host counts
+include room for the network and broadcast addresses (smallest subnet is a /30).
+
+### Network map
+
+```bash
+nettool discover 192.168.1.0/24 --json > discover.json
+nettool scan 192.168.1.10 --json > scan.json          # optional, adds open ports to the map
+nettool topology --discover discover.json --scan scan.json -o network.dot --png network.png
+```
+
+`--png` needs [Graphviz](https://graphviz.org/download/) installed; without it you still get
+`network.dot`, which any Graphviz viewer can open. Hosts with open ports are tinted red and the
+gateway (the `.1` host, or `--gateway`) is orange. Host names come from reverse DNS, which
+outsiders can influence, so they are escaped before going into the file.
+
 ### Network automation (Netmiko)
 
 ```bash
@@ -184,6 +236,9 @@ nettoolkit/
 │   ├── dashboard/   # JSON API, server and static frontend
 │   ├── loganalyzer/ # sshd log parser + brute-force detection
 │   ├── automation/  # inventory, config backup + diff, bulk commands
+│   ├── dnstool/     # DNS client and resolver comparison
+│   ├── vlsm/        # VLSM subnet planner
+│   ├── topology/    # Graphviz network map generator
 │   ├── demo.py      # synthetic data for `dashboard --demo`
 │   ├── storage.py   # SQLite history shared by monitor, speedlog, dashboard
 │   └── cli.py       # `nettool` command
