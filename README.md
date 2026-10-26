@@ -15,6 +15,7 @@ command. No third-party dependencies (standard library only).
 | `dns` | DNS lookups (A, AAAA, MX, NS, TXT, CNAME, PTR) and resolver speed comparison |
 | `vlsm` | VLSM planner: department sizes in, a subnet plan out |
 | `topology` | Network map (Graphviz) drawn from `discover` / `scan` results |
+| `sniff` | Packet sniffer: live capture (Linux, sudo) or read a `.pcap`, with filters and a summary |
 
 There is also a [home lab guide](docs/homelab/README.md) (Pi-hole + WireGuard in Docker).
 
@@ -178,6 +179,51 @@ nettool topology --discover discover.json --scan scan.json -o network.dot --png 
 gateway (the `.1` host, or `--gateway`) is orange. Host names come from reverse DNS, which
 outsiders can influence, so they are escaped before going into the file.
 
+### Packet sniffer
+
+```bash
+sudo nettool sniff -i eth0 -c 20                  # first 20 packets on eth0 (Linux, needs root)
+sudo nettool sniff -i wlan0 -d 30 --proto dns     # 30 seconds, only DNS
+sudo nettool sniff --host 192.168.1.5 --port 443 -w capture.pcap
+nettool sniff -r capture.pcap --proto tcp -q      # read a capture (any OS); -q prints only the summary
+```
+
+```
+09:54:50     74B  TCP     127.0.0.1:42000 -> 127.0.0.1:47445  [SYN] seq=3855640370
+09:54:50     71B  DNS     127.0.0.1:58905 -> 127.0.0.1:53  DNS query A example.com
+
+Packets: 9    Bytes: 670
+
+Protocols:
+  TCP       5
+  ICMP      2
+  UDP       1
+  DNS       1
+
+Most queried DNS names:
+  example.com                               1
+```
+
+Decodes Ethernet, VLAN, ARP, IPv4, IPv6, TCP (flags), UDP, ICMP and DNS questions, then
+prints a summary: protocols, top sources by bytes, busiest ports, most-queried names.
+
+- `-c N` stops after N packets that match your filter; with neither `-c` nor `-d` it runs until Ctrl+C.
+- `-w file.pcap` saves only the packets that match the filter, in a standard pcap file you can
+  open in Wireshark. The file is created owner-only (`0600`) because captures can contain other
+  people's unencrypted traffic, passwords and cookies included. Do not commit `.pcap` files (the
+  repo's `.gitignore` excludes them) and delete them when you are done.
+- It sees traffic to and from the machine it runs on, on the interface you pick; it does not turn on
+  promiscuous mode. On `lo` each packet is shown once.
+- Live capture is Linux only; reading `.pcap` files works everywhere. `pcapng` files are not
+  supported: convert with `editcap -F pcap in.pcapng out.pcap`.
+- Packets are untrusted input: decoding never crashes on truncated or random bytes (tested with
+  thousands of random frames), and DNS names are stripped of control characters before printing.
+- Only capture on networks you own or are allowed to monitor.
+
+Checked on this machine with real traffic on the loopback interface, and the saved file is
+recognised as a valid pcap by the system's `file` command. I could not test on Wi-Fi or Ethernet
+cards, or open the file in Wireshark here.
+
 ### Network automation (Netmiko)
 
 ```bash
@@ -239,6 +285,7 @@ nettoolkit/
 │   ├── dnstool/     # DNS client and resolver comparison
 │   ├── vlsm/        # VLSM subnet planner
 │   ├── topology/    # Graphviz network map generator
+│   ├── sniffer/     # packet decoder, pcap read/write, live capture, stats
 │   ├── demo.py      # synthetic data for `dashboard --demo`
 │   ├── storage.py   # SQLite history shared by monitor, speedlog, dashboard
 │   └── cli.py       # `nettool` command
@@ -258,7 +305,8 @@ pytest
 - [x] Phase 2: uptime monitor + Telegram alerts, speed test logger
 - [x] Phase 3: web dashboard
 - [x] Phase 4: log analyzer, Netmiko automation, home lab docs
-- [ ] Packet sniffer (`nettool sniff`): in progress, not working in this snapshot
+- [x] Packet sniffer (`nettool sniff`)
+- [x] Extras: DNS lookup, VLSM planner, network map
 
 ## License
 
