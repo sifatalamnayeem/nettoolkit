@@ -1,0 +1,9 @@
+[
+  { "ip": "192.168.1.1",  "alive": true, "hostname": "router.lan" },
+  { "ip": "192.168.1.10", "alive": true, "hostname": "homeserver.lan" },
+  { "ip": "192.168.1.12", "alive": true, "hostname": "nas.lan" },
+  { "ip": "192.168.1.23", "alive": true, "hostname": "laptop.lan" },
+  { "ip": "192.168.1.31", "alive": true, "hostname": null },
+  { "ip": "192.168.1.44", "alive": true, "hostname": "phone.lan" },
+  { "ip": "192.168.1.52", "alive": true, "hostname": "printer.lan" }
+]

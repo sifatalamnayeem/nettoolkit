@@ -137,6 +137,26 @@ def test_loaders_validate_input():
             load_scans([write("s2.json", [1, 2])])
 
 
+def test_example_files_in_the_readme_still_work():
+    here = os.path.dirname(os.path.abspath(__file__))
+    ex = lambda name: os.path.join(here, "..", "examples", name)
+    hosts = load_hosts(ex("discover.example.json"))
+    scans = load_scans([ex("scan.homeserver.json"), ex("scan.nas.json")])
+    assert len(hosts) == 7 and set(scans) == {"192.168.1.10", "192.168.1.12"}
+    dot = build_dot(hosts, scans)
+    assert "open: 22/ssh, 53/dns, 8080/http-alt" in dot and "open: 22/ssh, 445/smb" in dot
+    assert '"192.168.1.1" [label="192.168.1.1\\nrouter.lan\\nGateway"' in dot
+
+
+def test_license_and_ci_files_exist_and_say_what_the_readme_claims():
+    root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+    text = open(os.path.join(root, "LICENSE"), encoding="utf-8").read()
+    assert text.startswith("MIT License") and "Permission is hereby granted" in text
+    workflow = open(os.path.join(root, ".github", "workflows", "ci.yml"), encoding="utf-8").read()
+    assert "pytest" in workflow and '"3.9"' in workflow and '"3.13"' in workflow
+    assert "requires-python" in open(os.path.join(root, "pyproject.toml"), encoding="utf-8").read()
+
+
 def test_cli_topology(capsys):
     with tempfile.TemporaryDirectory() as d:
         disc = os.path.join(d, "d.json")

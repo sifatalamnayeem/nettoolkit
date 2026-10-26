@@ -79,7 +79,7 @@ def build_dot(hosts: Sequence[dict], scans: Optional[Dict[str, List[dict]]] = No
 
     lines = [
         "graph network {",
-        f'  label="{dot_escape(title)}"; labelloc=t; fontname="Helvetica"; fontsize=18;',
+        f'  label="{dot_escape(title)}"; labelloc=t; fontname="Helvetica"; fontsize=18; dpi=144;',
         '  node [fontname="Helvetica", fontsize=11, shape=box, style="rounded,filled", fillcolor="#eef3fb"];',
         '  edge [color="#7a8699"];',
         '  lan [label="LAN switch", shape=ellipse, fillcolor="#dfe6f0"];',

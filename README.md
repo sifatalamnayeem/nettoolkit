@@ -1,5 +1,8 @@
 # NetToolkit
 
+[![CI](https://github.com/sifatalamnayeem/nettoolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/sifatalamnayeem/nettoolkit/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 A modular networking toolkit written in Python, all behind a single `nettool`
 command. No third-party dependencies (standard library only).
 
@@ -168,6 +171,18 @@ include room for the network and broadcast addresses (smallest subnet is a /30).
 
 ### Network map
 
+![Example network map](docs/topology.png)
+
+*Generated from the sample data in `examples/` (not a real network). Re-create it with:*
+
+```bash
+nettool topology --discover examples/discover.example.json \
+  --scan examples/scan.homeserver.json --scan examples/scan.nas.json \
+  --title "Example home network (192.168.1.0/24)" --png docs/topology.png
+```
+
+For your own network:
+
 ```bash
 nettool discover 192.168.1.0/24 --json > discover.json
 nettool scan 192.168.1.10 --json > scan.json          # optional, adds open ports to the map
@@ -310,4 +325,4 @@ pytest
 
 ## License
 
-MIT
+[MIT](LICENSE). Use it, change it, learn from it. Only scan and capture networks you own or may test.
